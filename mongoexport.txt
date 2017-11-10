@@ -1,1 +1,1 @@
-mongoexport -d HealthSites -c urls -q "{"url":{$regex:/net\/$/}}" -f url --csv -o C:\Users\AKA\Downloads\39.csv
+mongoexport -d HealthSites -c urls -q '{"site":"net39","url":{"$regex":"net\/$"}}' -f url --type csv -o /Users/aka/Downloads/39.csv
