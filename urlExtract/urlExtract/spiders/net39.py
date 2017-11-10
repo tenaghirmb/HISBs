@@ -7,7 +7,7 @@ from urlExtract.items import UrlextractItem
 class Net39Spider(CrawlSpider):
     name = 'net39'
     allowed_domains = ['39.net']
-    start_urls = ['http://39.net/']
+    start_urls = ['http://www.39.net/', 'http://www.39.net/sitemap/']
 
     rules = (
         Rule(LinkExtractor(allow_domains=('39.net',)), callback='parse_url', follow=False),
