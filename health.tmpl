@@ -2,6 +2,7 @@
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from urlExtract.items import UrlextractItem
+import re
 
 
 class $classname(CrawlSpider):
@@ -19,3 +20,14 @@ class $classname(CrawlSpider):
             item['site'] = '$name'
             item['url'] = response.url
             yield item
+            try:
+                try:
+                    url = re.search('http.*?www.*?$name/.*?/', response.url).group()
+                except AttributeError:
+                    url = re.search('.*?$name/', response.url).group()
+                item = UrlextractItem()
+                item['site'] = '$name'
+                item['url'] = url
+                yield item
+            except AttributeError:
+                pass
