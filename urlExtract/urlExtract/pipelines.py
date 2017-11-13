@@ -8,6 +8,7 @@
 
 import pymongo
 
+
 class MongoPipeline(object):
 
     collection_name = 'urls'
@@ -31,5 +32,6 @@ class MongoPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].update({'url': item['url']}, dict(item), True)
+        self.db[self.collection_name].update(
+            {'url': item['url']}, dict(item), True)
         return item
