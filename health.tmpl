@@ -22,9 +22,9 @@ class $classname(CrawlSpider):
             yield item
             try:
                 try:
-                    url = re.search('http.*?www.*?$name/.*?/', response.url).group()
+                    url = re.search('http.*?$name.*?/.*?/', response.url).group()
                 except AttributeError:
-                    url = re.search('.*?$name/', response.url).group()
+                    url = re.search('.*?$domain/', response.url).group()
                 item = UrlextractItem()
                 item['site'] = '$name'
                 item['url'] = url
