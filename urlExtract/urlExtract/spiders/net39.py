@@ -10,7 +10,8 @@ class Net39Spider(CrawlSpider):
     start_urls = ['http://www.39.net/', 'http://www.39.net/sitemap/']
 
     rules = (
-        Rule(LinkExtractor(allow_domains=('39.net',)), callback='parse_url', follow=False),
+        Rule(LinkExtractor(allow_domains=('39.net',)),
+             callback='parse_url', follow=False),
     )
 
     def parse_url(self, response):

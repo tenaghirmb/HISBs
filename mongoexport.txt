@@ -1,1 +1,8 @@
 mongoexport -d HealthSites -c urls -q '{"site":"net39","url":{"$regex":"net\/$"}}' -f url --type csv -o /Users/aka/Downloads/39.csv
+mongoexport -d HealthSites -c urls -q '{"site":"xywy"}' -f url --type csv -o /Users/aka/Downloads/xywy.csv
+mongoexport -d HealthSites -c urls -q '{"site":"familydoctor"}' -f url --type csv -o /Users/aka/Downloads/familydoctor.csv
+mongoexport -d HealthSites -c urls -q '{"site":"healthSina","url":{"$regex":".*?cn\/.*?\/$"}}' -f url --type csv -o /Users/aka/Downloads/healthSina.csv
+mongoexport -d HealthSites -c urls -q '{"site":"haodf","url":{"$regex":"www.*?com/.*?/$"}}' -f url --type csv -o /Users/aka/Downloads/haodf.csv
+mongoexport -d HealthSites -c urls -q '{"site":"ask120","url":{"$regex":"com/$"}}' -f url --type csv -o /Users/aka/Downloads/120ask.csv
+mongoexport -d HealthSites -c urls -q '{"site":"fh21","url":{"$regex":"cn/[^/]*/$"}}' -f url --type csv -o /Users/aka/Downloads/fh21.csv
+mongoexport -d HealthSites -c urls -q '{"site":"qiuyi","url":{"$regex":"cn/[^/]*/$"}}' -f url --type csv -o /Users/aka/Downloads/qiuyi.csv
