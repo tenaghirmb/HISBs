@@ -40,7 +40,7 @@ alter column timestamp varchar(50) null
 
 -- 变换unix时间戳、提取url的域名
 update [lte]
-set urldomain=LEFT(url,isnull(CHARINDEX('/',url)-1),
+set urldomain=LEFT(url,CHARINDEX('/',url)-1),
 	timestamp1=DATEADD(S,CAST( SUBSTRING(timestamp,1,10) AS INT ) + 8 * 3600,'1970-01-01 00:00:00')
 where url is not null and CHARINDEX('/',url)>1
 
