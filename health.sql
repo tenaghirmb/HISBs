@@ -45,12 +45,22 @@ set urldomain=LEFT(url,CHARINDEX('/',url)-1),
 where url is not null and CHARINDEX('/',url)>1
 
 
--- 查看数据
-SELECT TOP 1000 [userid]
-      ,[timestamp]
-      ,[url]
-      ,[agent]
-      ,[ref]
-      ,[date]
-  FROM [data].[dbo].[lte]
+-- 统计域名访问次数
+SELECT h.url url
+      ,COUNT(*) cnt
+  INTO [data].[dbo].[sitecount]
+  FROM [data].[dbo].[healthsites] h
+  INNER JOIN [data].[dbo].[vLte] v
+  ON h.url = v.url1
+  GROUP BY h.url
+  ORDER BY cnt DESC
+
+SELECT h.url url
+      ,h.name name
+      ,h.Category category
+      ,isnull(c.cnt, 0) cnt
+  FROM [data].[dbo].[healthsites] h
+  LEFT JOIN [data].[dbo].[sitecount] c
+  ON h.url = c.url
+  ORDER BY cnt DESC
 
