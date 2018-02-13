@@ -1,6 +1,7 @@
 /*
 电信数据处理
-健康医疗
+[医疗]
+[机票]
 */
 
 
@@ -45,7 +46,7 @@ set urldomain=LEFT(url,CHARINDEX('/',url)-1),
 where url is not null and CHARINDEX('/',url)>1
 
 
--- 统计域名访问次数
+-- [医疗]统计域名访问次数
 SELECT h.url url
       ,COUNT(*) cnt
   INTO [data].[dbo].[sitecount]
@@ -63,4 +64,7 @@ SELECT h.url url
   LEFT JOIN [data].[dbo].[sitecount] c
   ON h.url = c.url
   ORDER BY cnt DESC
+
+
+-- [机票]导出ceair和ctrip的访问记录
 
