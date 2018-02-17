@@ -28,15 +28,16 @@ end
 -- 新增列、修改列
 ALTER TABLE lte   
 ADD urldomain varchar(500) null  
-
+GO
 ALTER TABLE lte   
 ADD timestamp1 datetime null
-
+GO
 alter table lte 
 alter column userid varchar(100) null
-
+GO
 alter table lte 
 alter column timestamp varchar(50) null
+GO
 
 
 -- 变换unix时间戳、提取url的域名
@@ -49,22 +50,68 @@ where url is not null and CHARINDEX('/',url)>1
 -- [医疗]统计域名访问次数
 SELECT h.url url
       ,COUNT(*) cnt
-  INTO [data].[dbo].[sitecount]
-  FROM [data].[dbo].[healthsites] h
-  INNER JOIN [data].[dbo].[vLte] v
-  ON h.url = v.url1
-  GROUP BY h.url
-  ORDER BY cnt DESC
-
+INTO [data].[dbo].[sitecount]
+FROM [data].[dbo].[healthsites] h
+INNER JOIN [data].[dbo].[vLte] v
+ON h.url = v.url1
+GROUP BY h.url
+ORDER BY cnt DESC
+GO
 SELECT h.url url
       ,h.name name
       ,h.Category category
       ,isnull(c.cnt, 0) cnt
-  FROM [data].[dbo].[healthsites] h
-  LEFT JOIN [data].[dbo].[sitecount] c
-  ON h.url = c.url
-  ORDER BY cnt DESC
+FROM [data].[dbo].[healthsites] h
+LEFT JOIN [data].[dbo].[sitecount] c
+ON h.url = c.url
+ORDER BY cnt DESC
+GO
 
 
 -- [机票]导出ceair和ctrip的访问记录
+-- ceair
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'ceair' AS [website]
+      ,[channel] =
+      CASE url1
+          WHEN 'mobile.ceair.com' THEN 'app'
+          ELSE 'browser'
+      END
+INTO [data].[dbo].[airflight]
+FROM [data].[dbo].[vLte]
+WHERE url1 IN ('mobile.ceair.com', 'm.ceair.com', 'www.ceair.com')
+GO
+-- ctrip
+INSERT INTO [data].[dbo].[airflight]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'ctrip' AS [website]
+      ,[channel] =
+      CASE
+          WHEN agent LIKE '%okhttp%' THEN 'app'
+          WHEN agent LIKE '%Dalvik%' THEN 'app'
+          WHEN agent LIKE '%Darwin%' THEN 'app'
+          WHEN agent LIKE '%Ctrip%' THEN 'app'
+          ELSE 'browser'
+      END
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%flight%ctrip%'
+    OR url1='m.ctrip.com'
+    OR url1 LIKE '%ctrip.com' AND url LIKE '%flight%' AND url1 NOT LIKE '%flight%' AND url1 <> 'm.ctrip.com'
+GO
 
