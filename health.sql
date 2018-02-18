@@ -115,3 +115,26 @@ WHERE url1 LIKE '%flight%ctrip%'
     OR url1 LIKE '%ctrip.com' AND url LIKE '%flight%' AND url1 NOT LIKE '%flight%' AND url1 <> 'm.ctrip.com'
 GO
 
+
+-- [机票]T1-T4
+-- T1
+SELECT [userid]
+      ,LEFT(date, 8) AS [date]
+      ,[website]
+      ,[channel]
+      ,COUNT(url) AS [request times]
+FROM [data].[dbo].[airflight]
+GROUP BY userid, LEFT(date, 8), website, channel
+ORDER BY userid, LEFT(date, 8), website, channel
+GO
+-- T2
+SELECT [userid]
+      ,[website]
+      ,MIN(LEFT(date, 8)) AS [date]
+FROM [data].[dbo].[airflight]
+GROUP BY userid, website, channel
+HAVING channel='app'
+ORDER BY userid, website
+GO
+-- T3
+
