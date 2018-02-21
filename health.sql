@@ -25,7 +25,7 @@ begin
 end
 
 
--- 新增列、修改列
+-- 修改表结构
 ALTER TABLE lte   
 ADD urldomain varchar(500) null  
 GO
@@ -60,7 +60,7 @@ GO
 SELECT h.url url
       ,h.name name
       ,h.Category category
-      ,isnull(c.cnt, 0) cnt
+      ,ISNULL(c.cnt, 0) cnt
 FROM [data].[dbo].[healthsites] h
 LEFT JOIN [data].[dbo].[sitecount] c
 ON h.url = c.url
@@ -116,6 +116,46 @@ WHERE url1 LIKE '%flight%ctrip%'
 GO
 
 
+-- [机票]导出其他网站的访问记录
+USE data
+GO
+
+ALTER TABLE airflight
+ALTER COLUMN website VARCHAR(10) NULL
+GO
+
+ALTER TABLE airflight
+ALTER COLUMN channel VARCHAR(10) NULL
+GO
+
+INSERT INTO [data].[dbo].[airflight]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,[website] =
+      CASE
+          WHEN url1 IN ('www.ly.com', 'm.ly.com') THEN 'ly'
+          WHEN url1 IN ('m.tuniu.com', 'flight-api.tuniu.com') THEN 'tuniu'
+          WHEN url1 = 'm.elong.com' THEN 'elong'
+          WHEN url1 IN ('www.airchina.com.cn', 'm.airchina.com', 'm.airchina.com.cn') THEN 'airchina'
+          WHEN url1 IN ('airport.csair.com', 'www.csair.com', 'm.csair.com', 'b2c.csair.com', 'wxapi.csair.com') THEN 'csair'
+          WHEN url1 LIKE '%juneyaoair.com' THEN 'juneyaoair'
+      END
+      ,NULL AS [channel]
+FROM [data].[dbo].[vLte]
+WHERE url LIKE '%flight%'
+    AND url1 IN ('www.ly.com', 'm.ly.com', 'm.tuniu.com', 'flight-api.tuniu.com', 'm.elong.com')
+    OR url1 IN ('www.airchina.com.cn', 'm.airchina.com', 'm.airchina.com.cn', 'airport.csair.com', 'www.csair.com', 'm.csair.com', 'b2c.csair.com', 'wxapi.csair.com')
+    OR url1 LIKE '%juneyaoair.com'
+GO
+
+
 -- [机票]T1-T4
 -- T1
 SELECT [userid]
@@ -125,16 +165,117 @@ SELECT [userid]
       ,COUNT(url) AS [request times]
 FROM [data].[dbo].[airflight]
 GROUP BY userid, LEFT(date, 8), website, channel
+HAVING website IN ('ctrip', 'ceair')
 ORDER BY userid, LEFT(date, 8), website, channel
 GO
+
 -- T2
 SELECT [userid]
       ,[website]
       ,MIN(LEFT(date, 8)) AS [date]
 FROM [data].[dbo].[airflight]
 GROUP BY userid, website, channel
-HAVING channel='app'
+HAVING channel='app' AND website IN ('ctrip', 'ceair')
 ORDER BY userid, website
 GO
+
 -- T3
+-- 创建临时表
+IF OBJECT_ID('tempdb..##T2') IS NOT NULL
+    DROP TABLE ##T2
+GO
+SELECT [userid]
+      ,[website]
+      ,MIN(timestamp) AS [timestamp]
+INTO ##T2
+FROM [data].[dbo].[airflight]
+GROUP BY userid, website, channel
+HAVING channel='app' AND website IN ('ctrip', 'ceair')
+ORDER BY userid, website
+GO
+IF OBJECT_ID('tempdb..##tmp') IS NOT NULL
+    DROP TABLE ##tmp
+GO
+SELECT [userid]
+      ,[timestamp]
+      ,[website]
+INTO ##tmp
+FROM [data].[dbo].[airflight]
+GO
+-- before
+IF OBJECT_ID('tempdb..##T3C1') IS NOT NULL
+    DROP TABLE ##T3C1
+GO
+SELECT a.userid
+      ,COUNT(DISTINCT b.website) AS [before]
+INTO ##T3C1
+FROM ##T2 a
+LEFT JOIN ##tmp b
+ON a.userid = b.userid
+WHERE a.timestamp >= b.timestamp AND a.website='ctrip'
+GROUP BY a.userid
+ORDER BY a.userid
+GO
+-- after
+IF OBJECT_ID('tempdb..##T3C2') IS NOT NULL
+    DROP TABLE ##T3C2
+GO
+SELECT a.userid
+      ,COUNT(DISTINCT b.website) AS [after]
+INTO ##T3C2
+FROM ##T2 a
+LEFT JOIN ##tmp b
+ON a.userid = b.userid
+WHERE a.timestamp < b.timestamp AND a.website='ctrip'
+GROUP BY a.userid
+ORDER BY a.userid
+GO
+-- merge
+SELECT ISNULL(a.userid, b.userid) AS userid
+      ,a.before
+      ,b.after
+FROM ##T3C1 a
+FULL OUTER JOIN ##T3C2 b
+ON a.userid = b.userid
+ORDER BY userid
+GO
+
+-- T4
+-- before
+IF OBJECT_ID('tempdb..##T4C1') IS NOT NULL
+    DROP TABLE ##T4C1
+GO
+SELECT a.userid
+      ,COUNT(DISTINCT b.website) AS [before]
+INTO ##T4C1
+FROM ##T2 a
+LEFT JOIN ##tmp b
+ON a.userid = b.userid
+WHERE a.timestamp >= b.timestamp AND a.website='ceair'
+GROUP BY a.userid
+ORDER BY a.userid
+GO
+-- after
+IF OBJECT_ID('tempdb..##T4C2') IS NOT NULL
+    DROP TABLE ##T4C2
+GO
+SELECT a.userid
+      ,COUNT(DISTINCT b.website) AS [after]
+INTO ##T4C2
+FROM ##T2 a
+LEFT JOIN ##tmp b
+ON a.userid = b.userid
+WHERE a.timestamp < b.timestamp AND a.website='ceair'
+GROUP BY a.userid
+ORDER BY a.userid
+GO
+-- merge
+SELECT ISNULL(a.userid, b.userid) AS userid
+      ,a.before
+      ,b.after
+FROM ##T4C1 a
+FULL OUTER JOIN ##T4C2 b
+ON a.userid = b.userid
+ORDER BY userid
+GO
 
