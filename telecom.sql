@@ -279,3 +279,35 @@ ON a.userid = b.userid
 ORDER BY userid
 GO
 
+
+-- [医疗]导出健康相关记录
+-- haodf
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'haodf' AS [website]
+INTO [data].[dbo].[health_records]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.haodf.%'
+GO
+-- cndzys
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'cndzys' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.cndzys.%'
+GO
