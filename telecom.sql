@@ -296,6 +296,14 @@ INTO [data].[dbo].[health_records]
 FROM [data].[dbo].[vLte]
 WHERE url1 LIKE '%.haodf.%'
 GO
+
+USE data
+GO
+
+ALTER TABLE health_records
+ALTER COLUMN website VARCHAR(10) NULL
+GO
+
 -- cndzys
 INSERT INTO [data].[dbo].[health_records]
 SELECT [userid]
