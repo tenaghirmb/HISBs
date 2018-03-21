@@ -319,3 +319,53 @@ SELECT [userid]
 FROM [data].[dbo].[vLte]
 WHERE url1 LIKE '%.cndzys.%'
 GO
+
+
+-- [医疗]Seasoning Trends
+SELECT DATEPART(quarter,LEFT(date, 8)) AS [quarter]
+      ,COUNT(url) AS [Number of visits]
+FROM [data].[dbo].[health_records]
+GROUP BY DATEPART(quarter,LEFT(date, 8))
+ORDER BY quarter
+GO
+
+SELECT DATEPART(quarter,LEFT(date, 8)) AS [quarter]
+      ,COUNT(DISTINCT userid) AS [Unique Visitors]
+FROM [data].[dbo].[health_records]
+GROUP BY DATEPART(quarter,LEFT(date, 8))
+ORDER BY quarter
+GO
+
+
+-- [医疗]Week Trends
+SET DATEFIRST 1;
+SELECT DATEPART(weekday,LEFT(date, 8)) AS [weekday]
+      ,COUNT(url) AS [Number of visits]
+FROM [data].[dbo].[health_records]
+GROUP BY DATEPART(weekday,LEFT(date, 8))
+ORDER BY weekday
+GO
+
+SET DATEFIRST 1;
+SELECT DATEPART(weekday,LEFT(date, 8)) AS [weekday]
+      ,COUNT(DISTINCT userid) AS [Unique Visitors]
+FROM [data].[dbo].[health_records]
+GROUP BY DATEPART(weekday,LEFT(date, 8))
+ORDER BY weekday
+GO
+
+
+-- [医疗]Time Trends
+SELECT DATEPART(hh,timestamp1) AS [hour]
+      ,COUNT(url) AS [Number of visits]
+FROM [data].[dbo].[health_records]
+GROUP BY DATEPART(hh,timestamp1)
+ORDER BY hour
+GO
+
+SELECT DATEPART(hh,timestamp1) AS [hour]
+      ,COUNT(DISTINCT userid) AS [Unique Visitors]
+FROM [data].[dbo].[health_records]
+GROUP BY DATEPART(hh,timestamp1)
+ORDER BY hour
+GO
