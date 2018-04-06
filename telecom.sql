@@ -199,6 +199,7 @@ GO
 SELECT [userid]
       ,[timestamp]
       ,[website]
+      ,[timestamp1]
 INTO ##tmp
 FROM [data].[dbo].[airflight]
 GO
@@ -207,37 +208,61 @@ IF OBJECT_ID('tempdb..##T3C1') IS NOT NULL
     DROP TABLE ##T3C1
 GO
 SELECT a.userid
+      ,DATEPART(month, b.timestamp1) AS [month]
       ,COUNT(DISTINCT b.website) AS [before]
 INTO ##T3C1
 FROM ##T2 a
 LEFT JOIN ##tmp b
 ON a.userid = b.userid
 WHERE a.timestamp >= b.timestamp AND a.website='ctrip'
-GROUP BY a.userid
-ORDER BY a.userid
+GROUP BY a.userid, DATEPART(month, b.timestamp1)
+ORDER BY a.userid, DATEPART(month, b.timestamp1)
 GO
+SELECT userid
+      ,AVG(before) AS [before_avg]
+INTO ##T3C1A
+FROM ##T3C1
+GROUP BY userid
+ORDER BY userid
+GO
+
 -- after
 IF OBJECT_ID('tempdb..##T3C2') IS NOT NULL
     DROP TABLE ##T3C2
 GO
 SELECT a.userid
+      ,DATEPART(month, b.timestamp1) AS [month]
       ,COUNT(DISTINCT b.website) AS [after]
 INTO ##T3C2
 FROM ##T2 a
 LEFT JOIN ##tmp b
 ON a.userid = b.userid
 WHERE a.timestamp < b.timestamp AND a.website='ctrip'
-GROUP BY a.userid
-ORDER BY a.userid
+GROUP BY a.userid, DATEPART(month, b.timestamp1)
+ORDER BY a.userid, DATEPART(month, b.timestamp1)
 GO
+SELECT userid
+      ,AVG(after) AS [after_avg]
+INTO ##T3C2A
+FROM ##T3C2
+GROUP BY userid
+ORDER BY userid
+GO
+
 -- merge
 SELECT ISNULL(a.userid, b.userid) AS userid
-      ,a.before
-      ,b.after
-FROM ##T3C1 a
-FULL OUTER JOIN ##T3C2 b
+      ,a.before_avg
+      ,b.after_avg
+INTO ##T3
+FROM ##T3C1A a
+FULL OUTER JOIN ##T3C2A b
 ON a.userid = b.userid
 ORDER BY userid
+GO
+
+SELECT COUNT(userid)
+FROM ##T3
+WHERE before_avg < after_avg
 GO
 
 -- T4
@@ -246,35 +271,54 @@ IF OBJECT_ID('tempdb..##T4C1') IS NOT NULL
     DROP TABLE ##T4C1
 GO
 SELECT a.userid
+      ,DATEPART(month, b.timestamp1) AS [month]
       ,COUNT(DISTINCT b.website) AS [before]
 INTO ##T4C1
 FROM ##T2 a
 LEFT JOIN ##tmp b
 ON a.userid = b.userid
 WHERE a.timestamp >= b.timestamp AND a.website='ceair'
-GROUP BY a.userid
-ORDER BY a.userid
+GROUP BY a.userid, DATEPART(month, b.timestamp1)
+ORDER BY a.userid, DATEPART(month, b.timestamp1)
 GO
+SELECT userid
+      ,AVG(before) AS [before_avg]
+INTO ##T4C1A
+FROM ##T4C1
+GROUP BY userid
+ORDER BY userid
+GO
+
 -- after
 IF OBJECT_ID('tempdb..##T4C2') IS NOT NULL
     DROP TABLE ##T4C2
 GO
 SELECT a.userid
+      ,DATEPART(month, b.timestamp1) AS [month]
       ,COUNT(DISTINCT b.website) AS [after]
 INTO ##T4C2
 FROM ##T2 a
 LEFT JOIN ##tmp b
 ON a.userid = b.userid
 WHERE a.timestamp < b.timestamp AND a.website='ceair'
-GROUP BY a.userid
-ORDER BY a.userid
+GROUP BY a.userid, DATEPART(month, b.timestamp1)
+ORDER BY a.userid, DATEPART(month, b.timestamp1)
 GO
+SELECT userid
+      ,AVG(after) AS [after_avg]
+INTO ##T4C2A
+FROM ##T4C2
+GROUP BY userid
+ORDER BY userid
+GO
+
 -- merge
 SELECT ISNULL(a.userid, b.userid) AS userid
-      ,a.before
-      ,b.after
-FROM ##T4C1 a
-FULL OUTER JOIN ##T4C2 b
+      ,a.before_avg
+      ,b.after_avg
+INTO ##T4
+FROM ##T4C1A a
+FULL OUTER JOIN ##T4C2A b
 ON a.userid = b.userid
 ORDER BY userid
 GO
@@ -354,3 +398,114 @@ GROUP BY DATEPART(hour,timestamp1), website
 ORDER BY hour, website
 GO
 
+
+-- [机票]Intensity of use
+SELECT [userid]
+      ,LEFT(date, 8) AS [date]
+      ,[website]
+      ,[channel]
+      ,COUNT(url) AS [request_times]
+INTO ##t1
+FROM [data].[dbo].[airflight]
+GROUP BY userid, LEFT(date, 8), website, channel
+HAVING website IN ('ctrip', 'ceair')
+ORDER BY userid, LEFT(date, 8), website, channel
+GO
+
+SELECT [userid]
+      ,[website]
+      ,MIN(LEFT(date, 8)) AS [date]
+INTO ##t2
+FROM [data].[dbo].[airflight]
+GROUP BY userid, website, channel
+HAVING channel='app' AND website IN ('ctrip', 'ceair')
+ORDER BY userid, website
+GO
+
+-- ctrip_before
+SELECT a.userid
+      ,a.date
+      ,a.website
+      ,a.channel
+      ,a.request_times
+      ,b.date AS ctrip_initial
+INTO #ctrip_before
+FROM ##t1 a
+RIGHT JOIN ##t2 b
+ON a.userid = b.userid
+WHERE b.website='ctrip' and a.date < b.date
+ORDER BY a.userid, a.date, a.website, a.channel
+GO
+SELECT userid
+      ,channel
+      ,AVG(request_times) AS Intensity
+FROM #ctrip_before
+GROUP BY userid, channel
+ORDER BY userid, channel
+GO
+
+-- ctrip_after
+SELECT a.userid
+      ,a.date
+      ,a.website
+      ,a.channel
+      ,a.request_times
+      ,b.date AS ctrip_initial
+INTO #ctrip_after
+FROM ##t1 a
+RIGHT JOIN ##t2 b
+ON a.userid = b.userid
+WHERE b.website='ctrip' and a.date >= b.date
+ORDER BY a.userid, a.date, a.website, a.channel
+GO
+SELECT userid
+      ,channel
+      ,AVG(request_times) AS Intensity
+FROM #ctrip_after
+GROUP BY userid, channel
+ORDER BY userid, channel
+GO
+
+-- ceair_before
+SELECT a.userid
+      ,a.date
+      ,a.website
+      ,a.channel
+      ,a.request_times
+      ,b.date AS ceair_initial
+INTO #ceair_before
+FROM ##t1 a
+RIGHT JOIN ##t2 b
+ON a.userid = b.userid
+WHERE b.website='ceair' and a.date < b.date
+ORDER BY a.userid, a.date, a.website, a.channel
+GO
+SELECT userid
+      ,channel
+      ,AVG(request_times) AS Intensity
+FROM #ceair_before
+GROUP BY userid, channel
+ORDER BY userid, channel
+GO
+
+-- ceair_after
+SELECT a.userid
+      ,a.date
+      ,a.website
+      ,a.channel
+      ,a.request_times
+      ,b.date AS ctrip_initial
+INTO #ceair_after
+FROM ##t1 a
+RIGHT JOIN ##t2 b
+ON a.userid = b.userid
+WHERE b.website='ceair' and a.date >= b.date
+ORDER BY a.userid, a.date, a.website, a.channel
+GO
+SELECT userid
+      ,channel
+      ,AVG(request_times) AS Intensity
+FROM #ceair_after
+GROUP BY userid, channel
+ORDER BY userid, channel
+GO
