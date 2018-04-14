@@ -653,3 +653,14 @@ FROM #ceair_after
 GROUP BY userid, channel
 ORDER BY userid, channel
 GO
+
+
+-- [医疗]Number of visits & Unique visitors
+SELECT website
+      ,COUNT(url) AS nv
+      ,COUNT(distinct userid) AS uv
+FROM [data].[dbo].[health_records]
+GROUP BY website
+ORDER BY nv DESC
+GO
+
