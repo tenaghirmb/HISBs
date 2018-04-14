@@ -364,6 +364,150 @@ FROM [data].[dbo].[vLte]
 WHERE url1 LIKE '%.cndzys.%'
 GO
 
+-- boohee
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'boohee' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.boohee.%'
+GO
+
+-- guahao
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'guahao' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.guahao.%'
+GO
+
+-- 39net
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'39net' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.39.net'
+GO
+
+-- 120ask
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'120ask' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.120.net' OR url1 LIKE '%.120ask%'
+GO
+
+-- xywy
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'xywy' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.xywy.%'
+GO
+
+-- 360kad
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'360kad' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.360kad.%'
+GO
+
+-- chunyuyisheng
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'chunyu' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.chunyuyisheng.%'
+GO
+
+-- jianke
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'jianke' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.jianke.%'
+GO
+
+-- soyoung
+INSERT INTO [data].[dbo].[health_records]
+SELECT [userid]
+      ,[timestamp]
+      ,[url]
+      ,[agent]
+      ,[ref]
+      ,[date]
+      ,[slashindex]
+      ,[url1]
+      ,[timestamp1]
+      ,'soyoung' AS [website]
+FROM [data].[dbo].[vLte]
+WHERE url1 LIKE '%.soyoung.%'
+GO
+
 
 -- [医疗]Seasoning Trends
 SELECT DATEPART(quarter,timestamp1) AS [quarter]
