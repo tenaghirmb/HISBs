@@ -59,7 +59,7 @@ ORDER BY cnt DESC
 GO
 SELECT h.url url
       ,h.name name
-      ,h.Category category
+      ,h.category category
       ,ISNULL(c.cnt, 0) cnt
 FROM [data].[dbo].[healthsites] h
 LEFT JOIN [data].[dbo].[sitecount] c
@@ -658,9 +658,35 @@ GO
 -- [医疗]Number of visits & Unique visitors
 SELECT website
       ,COUNT(url) AS nv
-      ,COUNT(distinct userid) AS uv
+      ,COUNT(DISTINCT userid) AS uv
 FROM [data].[dbo].[health_records]
 GROUP BY website
 ORDER BY nv DESC
 GO
+
+
+-- [医疗]Search penetration: unique visitors
+SELECT s.category
+      ,COUNT(DISTINCT userid) AS uv
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[healthsites] s
+ON r.website = s.abbreviation
+GROUP BY s.category
+ORDER BY s.category DESC
+GO
+
+-- [医疗]Distribution of search effort
+SELECT s.category
+      ,COUNT(r.url) AS nv
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[healthsites] s
+ON r.website = s.abbreviation
+GROUP BY s.category
+ORDER BY s.category DESC
+GO
+
+
+
+
+
 
