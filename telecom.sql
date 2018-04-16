@@ -717,3 +717,47 @@ ORDER BY cs
 GO
 
 
+-- [医疗]Consideration Set each Session
+IF OBJECT_ID('tempdb..#Diversity') IS NOT NULL
+    DROP TABLE #Diversity
+GO
+SELECT userid
+      ,LEFT(date, 8) AS [date]
+      ,COUNT(DISTINCT website) AS cs
+INTO #Diversity
+FROM [data].[dbo].[health_records]
+GROUP BY userid, LEFT(date, 8)
+ORDER BY userid, LEFT(date, 8)
+GO
+SELECT cs
+      ,COUNT(cs) AS sessions
+      ,CONVERT(DECIMAL(4,4), COUNT(cs)/CONVERT(DECIMAL(6,2), (SELECT COUNT(cs) FROM #Diversity))) AS pct
+FROM #Diversity
+GROUP BY cs
+ORDER BY cs
+GO
+
+
+-- [医疗]Number of Visits each Session
+IF OBJECT_ID('tempdb..#Intensity') IS NOT NULL
+    DROP TABLE #Intensity
+GO
+SELECT userid
+      ,LEFT(date, 8) AS [date]
+      ,COUNT(url) AS Intensity
+INTO #Intensity
+FROM [data].[dbo].[health_records]
+GROUP BY userid, LEFT(date, 8)
+ORDER BY userid, LEFT(date, 8)
+GO
+SELECT Intensity
+      ,COUNT(Intensity) AS sessions
+FROM #Intensity
+GROUP BY Intensity
+ORDER BY Intensity
+GO
+
+
+
+
+
