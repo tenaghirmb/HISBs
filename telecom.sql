@@ -686,7 +686,34 @@ ORDER BY s.category DESC
 GO
 
 
-
-
+-- [医疗]Diversity
+IF OBJECT_ID('tempdb..#Diversity') IS NOT NULL
+    DROP TABLE #Diversity
+GO
+IF OBJECT_ID('tempdb..#csavg') IS NOT NULL
+    DROP TABLE #csavg
+GO
+SELECT userid
+      ,LEFT(date, 8) AS [date]
+      ,COUNT(DISTINCT website) AS cs
+INTO #Diversity
+FROM [data].[dbo].[health_records]
+GROUP BY userid, LEFT(date, 8)
+ORDER BY userid, LEFT(date, 8)
+GO
+SELECT userid
+      ,AVG(cs) AS cs_avg
+INTO #csavg
+FROM #Diversity
+GROUP BY userid
+ORDER BY userid
+GO
+SELECT cs_avg AS cs
+      ,COUNT(DISTINCT userid) AS cnt
+      ,CONVERT(DECIMAL(4,4), COUNT(DISTINCT userid)/CONVERT(DECIMAL(5,2), (SELECT COUNT(DISTINCT userid) FROM #csavg))) AS pct
+FROM #csavg
+GROUP BY cs_avg
+ORDER BY cs
+GO
 
 
