@@ -510,36 +510,42 @@ GO
 
 
 -- [医疗]Seasoning Trends
-SELECT DATEPART(quarter,timestamp1) AS [quarter]
-      ,[website]
-      ,COUNT(url) AS [Number of visits]
-      ,COUNT(DISTINCT userid) AS [Unique Visitors]
-FROM [data].[dbo].[health_records]
-GROUP BY DATEPART(quarter,timestamp1), website
-ORDER BY quarter, website
+SELECT DATEPART(quarter,r.timestamp1) AS [quarter]
+      ,s.category AS category
+      ,COUNT(r.url) AS [Number of visits]
+      ,COUNT(DISTINCT r.userid) AS [Unique Visitors]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[healthsites] s
+ON r.website = s.abbreviation
+GROUP BY DATEPART(quarter,r.timestamp1), s.category
+ORDER BY quarter, category
 GO
 
 
 -- [医疗]Week Trends
 SET DATEFIRST 1;
-SELECT DATEPART(weekday,timestamp1) AS [weekday]
-      ,[website]
-      ,COUNT(url) AS [Number of visits]
-      ,COUNT(DISTINCT userid) AS [Unique Visitors]
-FROM [data].[dbo].[health_records]
-GROUP BY DATEPART(weekday,timestamp1), website
-ORDER BY weekday, website
+SELECT DATEPART(weekday,r.timestamp1) AS [weekday]
+      ,s.category AS category
+      ,COUNT(r.url) AS [Number of visits]
+      ,COUNT(DISTINCT r.userid) AS [Unique Visitors]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[healthsites] s
+ON r.website = s.abbreviation
+GROUP BY DATEPART(weekday,r.timestamp1), s.category
+ORDER BY weekday, category
 GO
 
 
 -- [医疗]Time Trends
-SELECT DATEPART(hour,timestamp1) AS [hour]
-      ,[website]
-      ,COUNT(url) AS [Number of visits]
-      ,COUNT(DISTINCT userid) AS [Unique Visitors]
-FROM [data].[dbo].[health_records]
-GROUP BY DATEPART(hour,timestamp1), website
-ORDER BY hour, website
+SELECT DATEPART(hour,r.timestamp1) AS [hour]
+      ,s.category AS category
+      ,COUNT(r.url) AS [Number of visits]
+      ,COUNT(DISTINCT r.userid) AS [Unique Visitors]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[healthsites] s
+ON r.website = s.abbreviation
+GROUP BY DATEPART(hour,r.timestamp1), s.category
+ORDER BY hour, category
 GO
 
 
