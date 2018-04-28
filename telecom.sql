@@ -159,20 +159,20 @@ GO
 -- [机票]T1-T4
 -- T1
 SELECT [userid]
-      ,LEFT(date, 8) AS [date]
+      ,date
       ,[website]
       ,[channel]
       ,COUNT(url) AS [request times]
 FROM [data].[dbo].[airflight]
-GROUP BY userid, LEFT(date, 8), website, channel
+GROUP BY userid, date, website, channel
 HAVING website IN ('ctrip', 'ceair')
-ORDER BY userid, LEFT(date, 8), website, channel
+ORDER BY userid, date, website, channel
 GO
 
 -- T2
 SELECT [userid]
       ,[website]
-      ,MIN(LEFT(date, 8)) AS [date]
+      ,MIN(date) AS [date]
 FROM [data].[dbo].[airflight]
 GROUP BY userid, website, channel
 HAVING channel='app' AND website IN ('ctrip', 'ceair')
@@ -551,20 +551,20 @@ GO
 
 -- [机票]Intensity of use
 SELECT [userid]
-      ,LEFT(date, 8) AS [date]
+      ,date
       ,[website]
       ,[channel]
       ,COUNT(url) AS [request_times]
 INTO ##t1
 FROM [data].[dbo].[airflight]
-GROUP BY userid, LEFT(date, 8), website, channel
+GROUP BY userid, date, website, channel
 HAVING website IN ('ctrip', 'ceair')
-ORDER BY userid, LEFT(date, 8), website, channel
+ORDER BY userid, date, website, channel
 GO
 
 SELECT [userid]
       ,[website]
-      ,MIN(LEFT(date, 8)) AS [date]
+      ,MIN(date) AS [date]
 INTO ##t2
 FROM [data].[dbo].[airflight]
 GROUP BY userid, website, channel
@@ -728,12 +728,12 @@ IF OBJECT_ID('tempdb..#Diversity') IS NOT NULL
     DROP TABLE #Diversity
 GO
 SELECT userid
-      ,LEFT(date, 8) AS [date]
+      ,date
       ,COUNT(DISTINCT website) AS cs
 INTO #Diversity
 FROM [data].[dbo].[health_records]
-GROUP BY userid, LEFT(date, 8)
-ORDER BY userid, LEFT(date, 8)
+GROUP BY userid, date
+ORDER BY userid, date
 GO
 SELECT cs
       ,COUNT(cs) AS sessions
@@ -749,12 +749,12 @@ IF OBJECT_ID('tempdb..#Intensity') IS NOT NULL
     DROP TABLE #Intensity
 GO
 SELECT userid
-      ,LEFT(date, 8) AS [date]
+      ,date
       ,COUNT(url) AS Intensity
 INTO #Intensity
 FROM [data].[dbo].[health_records]
-GROUP BY userid, LEFT(date, 8)
-ORDER BY userid, LEFT(date, 8)
+GROUP BY userid, date
+ORDER BY userid, date
 GO
 SELECT Intensity
       ,COUNT(Intensity) AS sessions
