@@ -700,12 +700,12 @@ IF OBJECT_ID('tempdb..#csavg') IS NOT NULL
     DROP TABLE #csavg
 GO
 SELECT userid
-      ,LEFT(date, 8) AS [date]
+      ,DATEPART(quarter, timestamp1) AS [quarter]
       ,COUNT(DISTINCT website) AS cs
 INTO #Diversity
 FROM [data].[dbo].[health_records]
-GROUP BY userid, LEFT(date, 8)
-ORDER BY userid, LEFT(date, 8)
+GROUP BY userid, DATEPART(quarter, timestamp1)
+ORDER BY userid, DATEPART(quarter, timestamp1)
 GO
 SELECT userid
       ,AVG(cs) AS cs_avg
