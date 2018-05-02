@@ -764,6 +764,18 @@ ORDER BY Intensity
 GO
 
 
-
+-- [医疗]Loyalty
+SELECT r.userid
+      ,h.category
+      ,r.website
+      ,COUNT(r.url) AS [Visit Numbers]
+      ,COUNT(DISTINCT r.date) AS [Visit Days]
+      ,DATEDIFF(day ,MAX(r.date), '2017-08-31') AS [Last Visit]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[healthsites] h
+ON r.website = h.abbreviation
+GROUP BY r.userid, h.category, r.website
+ORDER BY r.userid, h.category, r.website
+GO
 
 
