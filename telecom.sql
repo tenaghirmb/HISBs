@@ -779,3 +779,59 @@ ORDER BY r.userid, h.category, r.website
 GO
 
 
+-- [医疗]Cross-browsing
+IF OBJECT_ID('tempdb..##c1') IS NOT NULL
+    DROP TABLE ##c1
+GO
+SELECT r.userid
+      ,h.category
+      ,COUNT(r.url) AS [Number of Visits]
+INTO ##c1
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[healthsites] h
+ON r.website = h.abbreviation
+GROUP BY r.userid, h.category
+ORDER BY r.userid, h.category
+GO
+SELECT category
+      ,COUNT(DISTINCT userid) AS [Unique Users]
+      ,SUM([Number of Visits]) AS [Number of Visits]
+FROM ##c1
+GROUP BY category
+ORDER BY category
+GO
+
+CREATE TABLE data.dbo.CrossBrowsing  
+(  
+    userid varchar(100) PRIMARY KEY
+    ,medical int  NULL  
+    ,lifestyle int NULL  
+    ,epharmacy int NULL  
+);
+
+INSERT INTO data.dbo.CrossBrowsing (userid)
+SELECT DISTINCT userid
+FROM ##c1
+GO
+USE data
+GO
+UPDATE CrossBrowsing set CrossBrowsing.medical = ##c1.[Number of Visits]
+FROM ##c1
+WHERE CrossBrowsing.userid = ##c1.userid AND ##c1.category = 'Medical'
+GO
+UPDATE CrossBrowsing set CrossBrowsing.lifestyle = ##c1.[Number of Visits]
+FROM ##c1
+WHERE CrossBrowsing.userid = ##c1.userid AND ##c1.category = 'Lifestyle'
+GO
+UPDATE CrossBrowsing set CrossBrowsing.epharmacy = ##c1.[Number of Visits]
+FROM ##c1
+WHERE CrossBrowsing.userid = ##c1.userid AND ##c1.category = 'E-pharmacy'
+GO
+
+SELECT COUNT(lifestyle) ul
+      ,SUM(lifestyle) vl
+      ,COUNT(epharmacy) ue
+      ,SUM(epharmacy) ve
+FROM data.dbo.CrossBrowsing
+WHERE medical IS NOT NULL
+GO
