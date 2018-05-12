@@ -835,3 +835,56 @@ SELECT COUNT(lifestyle) ul
 FROM data.dbo.CrossBrowsing
 WHERE medical IS NOT NULL
 GO
+
+
+-- [医疗]Create labels(Platform & Channel)
+ALTER TABLE [data].[dbo].[health_records]
+ADD platform varchar(20) null  
+GO
+ALTER TABLE [data].[dbo].[health_records]
+ADD channel varchar(20) null
+GO
+
+-- platform
+UPDATE [data].[dbo].[health_records]
+SET platform =
+    CASE
+        WHEN agent LIKE '%Apache-HttpClient%' THEN 'android'
+        WHEN agent LIKE '%Dalvik%' THEN 'android'
+        WHEN agent LIKE '%Darwin%' THEN 'iphone'
+        WHEN agent LIKE '%iPhone%' THEN 'iphone'
+        WHEN agent LIKE '%android%' THEN 'android'
+        WHEN agent LIKE '%Mozilla/% (i%' THEN 'iphone'
+        WHEN agent LIKE '%Mozilla/% (L%' THEN 'android'
+        WHEN agent LIKE '%okhttp%' THEN 'android'
+        WHEN agent LIKE '%Xiaomi%' THEN 'android'
+        WHEN agent LIKE '%Macintosh%' THEN 'iphone'
+        WHEN agent LIKE '%Phoenix%' THEN 'android'
+    END
+GO
+
+-- channel
+UPDATE [data].[dbo].[health_records]
+SET channel =
+    CASE
+        WHEN agent LIKE '%Apache-HttpClient%' THEN 'app'
+        WHEN agent LIKE '%Phoenix%' THEN 'app'
+        WHEN agent LIKE '%okhttp%' THEN 'app'
+        WHEN agent LIKE '%Dalvik%' THEN 'app'
+        WHEN agent LIKE '%Darwin%' THEN 'app'
+        WHEN agent LIKE 'QQ%' THEN 'browser'
+        WHEN agent LIKE 'Xiaomi%' THEN 'browser'
+        WHEN agent LIKE '%app%' THEN 'app'
+        WHEN agent = 'Android/Volley' THEN 'app'
+        WHEN agent = 'Android/retrofit' THEN 'app'
+        WHEN agent LIKE 'Mozilla%Linux%Version%' THEN 'app'
+        WHEN agent LIKE 'Mozilla%Linux%' THEN 'browser'
+        WHEN agent LIKE 'Mozilla%iPhone%Version%' THEN 'browser'
+        WHEN agent LIKE 'Mozilla%iPhone%' THEN 'app'
+    END
+GO
+
+
+
+
+
