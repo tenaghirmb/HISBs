@@ -885,6 +885,68 @@ SET channel =
 GO
 
 
+-- [医疗]T-test
+-- Number of Visits
+SELECT userid
+      ,platform
+      ,COUNT(url) AS [Number of Visits]
+FROM [data].[dbo].[health_records]
+GROUP BY userid, platform
+ORDER BY userid, platform
+GO
+
+SELECT userid
+      ,channel
+      ,COUNT(url) AS [Number of Visits]
+FROM [data].[dbo].[health_records]
+GROUP BY userid, channel
+ORDER BY userid, channel
+GO
+
+SELECT r.userid
+      ,u.gender
+      ,u.consumption
+      ,COUNT(r.url) AS [Number of Visits]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, u.gender, u.consumption
+ORDER BY r.userid
+GO
+
+-- Intensity of Use
+SELECT userid
+      ,date
+      ,platform
+      ,COUNT(url) AS [Use Intensity]
+FROM [data].[dbo].[health_records]
+GROUP BY userid, date, platform
+ORDER BY userid, date, platform
+GO
+
+SELECT userid
+      ,date
+      ,channel
+      ,COUNT(url) AS [Use Intensity]
+FROM [data].[dbo].[health_records]
+GROUP BY userid, date, channel
+ORDER BY userid, date, channel
+GO
+
+SELECT r.userid
+      ,r.date
+      ,u.gender
+      ,u.consumption
+      ,COUNT(r.url) AS [Use Intensity]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, r.date, u.gender, u.consumption
+ORDER BY r.userid, r.date
+GO
+
+
+
 
 
 
