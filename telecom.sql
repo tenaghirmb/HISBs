@@ -892,6 +892,7 @@ SELECT userid
       ,COUNT(url) AS [Number of Visits]
 FROM [data].[dbo].[health_records]
 GROUP BY userid, platform
+HAVING platform IS NOT NULL
 ORDER BY userid, platform
 GO
 
@@ -900,6 +901,7 @@ SELECT userid
       ,COUNT(url) AS [Number of Visits]
 FROM [data].[dbo].[health_records]
 GROUP BY userid, channel
+HAVING channel IS NOT NULL
 ORDER BY userid, channel
 GO
 
@@ -921,6 +923,7 @@ SELECT userid
       ,COUNT(url) AS [Use Intensity]
 FROM [data].[dbo].[health_records]
 GROUP BY userid, date, platform
+HAVING platform IS NOT NULL
 ORDER BY userid, date, platform
 GO
 
@@ -930,6 +933,7 @@ SELECT userid
       ,COUNT(url) AS [Use Intensity]
 FROM [data].[dbo].[health_records]
 GROUP BY userid, date, channel
+HAVING channel IS NOT NULL
 ORDER BY userid, date, channel
 GO
 
