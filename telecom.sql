@@ -907,20 +907,31 @@ GO
 
 SELECT r.userid
       ,u.gender
+      ,COUNT(r.url) AS [Number of Visits]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, u.gender
+HAVING u.gender IS NOT NULL
+ORDER BY r.userid
+GO
+
+SELECT r.userid
       ,u.consumption
       ,COUNT(r.url) AS [Number of Visits]
 FROM [data].[dbo].[health_records] r
 JOIN [data].[dbo].[user] u
 ON r.userid = u.userid
-GROUP BY r.userid, u.gender, u.consumption
+GROUP BY r.userid, u.consumption
+HAVING u.consumption IS NOT NULL
 ORDER BY r.userid
 GO
 
 -- Intensity of Use
 SELECT userid
-      ,date
       ,platform
       ,COUNT(url) AS [Use Intensity]
+      ,date
 FROM [data].[dbo].[health_records]
 GROUP BY userid, date, platform
 HAVING platform IS NOT NULL
@@ -928,9 +939,9 @@ ORDER BY userid, date, platform
 GO
 
 SELECT userid
-      ,date
       ,channel
       ,COUNT(url) AS [Use Intensity]
+      ,date
 FROM [data].[dbo].[health_records]
 GROUP BY userid, date, channel
 HAVING channel IS NOT NULL
@@ -938,17 +949,28 @@ ORDER BY userid, date, channel
 GO
 
 SELECT r.userid
-      ,r.date
       ,u.gender
-      ,u.consumption
       ,COUNT(r.url) AS [Use Intensity]
+      ,r.date
 FROM [data].[dbo].[health_records] r
 JOIN [data].[dbo].[user] u
 ON r.userid = u.userid
-GROUP BY r.userid, r.date, u.gender, u.consumption
+GROUP BY r.userid, r.date, u.gender
+HAVING u.gender IS NOT NULL
 ORDER BY r.userid, r.date
 GO
 
+SELECT r.userid
+      ,u.consumption
+      ,COUNT(r.url) AS [Use Intensity]
+      ,r.date
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, r.date, u.consumption
+HAVING u.consumption IS NOT NULL
+ORDER BY r.userid, r.date
+GO
 
 
 
