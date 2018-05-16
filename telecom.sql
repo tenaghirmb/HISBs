@@ -917,7 +917,7 @@ ORDER BY r.userid
 GO
 
 SELECT r.userid
-      ,u.consumption
+      ,IIF(u.consumption>10000,'high','low') AS income
       ,COUNT(r.url) AS [Number of Visits]
 FROM [data].[dbo].[health_records] r
 JOIN [data].[dbo].[user] u
@@ -961,7 +961,7 @@ ORDER BY r.userid, r.date
 GO
 
 SELECT r.userid
-      ,u.consumption
+      ,IIF(u.consumption>10000,'high','low') AS income
       ,COUNT(r.url) AS [Use Intensity]
       ,r.date
 FROM [data].[dbo].[health_records] r
