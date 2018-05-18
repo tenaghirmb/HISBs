@@ -973,6 +973,80 @@ ORDER BY r.userid, r.date
 GO
 
 
+-- [医疗]ANOVA
+-- Number of Visits
+SELECT r.userid
+      ,r.channel
+      ,IIF(u.consumption>10000,'high','low') AS income
+      ,COUNT(r.url) AS [Number of Visits]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, r.channel, u.consumption
+HAVING r.channel IS NOT NULL AND u.consumption IS NOT NULL
+ORDER BY r.userid
+GO
 
+SELECT r.userid
+      ,r.platform
+      ,IIF(u.consumption>10000,'high','low') AS income
+      ,COUNT(r.url) AS [Number of Visits]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, r.platform, u.consumption
+HAVING r.platform IS NOT NULL AND u.consumption IS NOT NULL
+ORDER BY r.userid
+GO
 
+SELECT r.userid
+      ,u.gender
+      ,IIF(u.consumption>10000,'high','low') AS income
+      ,COUNT(r.url) AS [Number of Visits]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, u.gender, u.consumption
+HAVING u.gender IS NOT NULL AND u.consumption IS NOT NULL
+ORDER BY r.userid
+GO
+
+SELECT r.userid
+      ,r.platform
+      ,u.gender
+      ,COUNT(r.url) AS [Number of Visits]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, r.platform, u.gender
+HAVING r.platform IS NOT NULL AND u.gender IS NOT NULL
+ORDER BY r.userid
+GO
+
+SELECT r.userid
+      ,r.channel
+      ,u.gender
+      ,COUNT(r.url) AS [Number of Visits]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, r.channel, u.gender
+HAVING r.channel IS NOT NULL AND u.gender IS NOT NULL
+ORDER BY r.userid
+GO
+
+-- Intensity of Use
+SELECT r.userid
+      ,r.platform
+      ,r.channel
+      ,u.gender
+      ,IIF(u.consumption>10000,'high','low') AS income
+      ,COUNT(r.url) AS [Use Intensity]
+FROM [data].[dbo].[health_records] r
+JOIN [data].[dbo].[user] u
+ON r.userid = u.userid
+GROUP BY r.userid, r.date, r.platform, r.channel, u.gender, u.consumption
+HAVING r.platform IS NOT NULL AND r.channel IS NOT NULL AND u.gender IS NOT NULL AND u.consumption IS NOT NULL
+ORDER BY r.userid, r.date
+GO
 
