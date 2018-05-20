@@ -1051,7 +1051,7 @@ ORDER BY r.userid, r.date
 GO
 
 
--- [医疗]csQCA
+-- [医疗]fsQCA
 IF OBJECT_ID('tempdb..##tmp') IS NOT NULL
     DROP TABLE ##tmp
 GO
@@ -1082,7 +1082,7 @@ SELECT j.userid
       ,j.platform
       ,j.channel
       ,u.gender
-      ,IIF(u.consumption>10000,'high','low') AS income
+      ,u.consumption AS income
       ,j.intensity
 FROM ##j j
 JOIN [data].[dbo].[user] u
