@@ -1050,3 +1050,41 @@ HAVING r.platform IS NOT NULL AND r.channel IS NOT NULL AND u.gender IS NOT NULL
 ORDER BY r.userid, r.date
 GO
 
+
+-- [医疗]csQCA
+IF OBJECT_ID('tempdb..##tmp') IS NOT NULL
+    DROP TABLE ##tmp
+GO
+SELECT userid
+      ,date
+      ,platform
+      ,channel
+      ,COUNT(url) AS intensity
+INTO ##tmp
+FROM [data].[dbo].[health_records]
+GROUP BY userid, date, platform, channel
+HAVING platform IS NOT NULL AND channel IS NOT NULL
+ORDER BY userid, date, platform, channel
+GO
+IF OBJECT_ID('tempdb..##j') IS NOT NULL
+    DROP TABLE ##j
+GO
+SELECT userid
+      ,platform
+      ,channel
+      ,AVG(intensity) AS intensity
+INTO ##j
+FROM ##tmp
+GROUP BY userid, platform, channel
+ORDER BY userid, platform, channel
+GO
+SELECT j.userid
+      ,j.platform
+      ,j.channel
+      ,u.gender
+      ,IIF(u.consumption>10000,'high','low') AS income
+      ,j.intensity
+FROM ##j j
+JOIN [data].[dbo].[user] u
+ON u.userid = j.userid
+GO
