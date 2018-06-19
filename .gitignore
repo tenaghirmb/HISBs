@@ -6,3 +6,7 @@ __pycache__
 
 # My keys
 private.py
+
+# Mac
+.DS_Store
+
