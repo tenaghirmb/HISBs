@@ -2,7 +2,7 @@
 # @Author: aka
 # @Date:   2018-06-20 17:05:08
 # @Last Modified by:   aka
-# @Last Modified time: 2018-07-16 12:24:27
+# @Last Modified time: 2018-07-16 14:18:05
 # @Email: tenag_hirmb@hotmail.com
 
 import pymysql.cursors
@@ -83,7 +83,7 @@ df = query(sql)
 df = df.astype({'ME': 'float', 'MC': 'float', 'CS': 'float', 'MAP': 'float', 'OP': 'float', 'F': 'float', 'POP': 'float', 'SOP': 'float', 'DIS': 'float', })
 
 df.iloc[:, 0:9] = df.iloc[:, 0:9].div(df.iloc[:, 0:9].max(axis=1), axis='index')
-df.usefulre = df.usefulre.apply(lambda x: math.log(x + 0.01, 10))
+df.usefulre = df.usefulre.apply(lambda x: math.log(x + 1, 10))
 df.comment_score = df.comment_score.apply(lambda x: math.log(x + 0.01, 10))
 df.number_of_comments = df.number_of_comments.apply(lambda x: math.log(x, 10))
 
@@ -98,7 +98,8 @@ def segment(df, condition, cname):
         doccap = 'high' if n[1] else 'low'
         filename = n[0] + '_' + cname + '_' + doccap + '.csv'
         x.reset_index(drop=True, inplace=True)
-        logging.info(filename + '\n' + str(x.usefulre.quantile([0.95, 0.5, 0.05])))
+        n1, n2, n3 = x.usefulre.quantile([0.95, 0.5, 0.05]).round(2)
+        logging.info("%-20s  calibrate(usefulre,%.2f,%.2f,%.2f)" % (filename, n1, n2, n3))
         x.to_csv(filename, columns=['ME', 'MC', 'CS', 'MAP', 'OP', 'F', 'POP', 'SOP', 'DIS', 'usefulre'])
 
 
