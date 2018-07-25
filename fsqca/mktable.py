@@ -2,7 +2,7 @@
 # @Author: aka
 # @Date:   2018-07-25 16:07:56
 # @Last Modified by:   aka
-# @Last Modified time: 2018-07-25 21:22:02
+# @Last Modified time: 2018-07-25 21:26:35
 # @Email: tenag_hirmb@hotmail.com
 
 import re
@@ -10,7 +10,6 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
 
-filename = 'AD_grade_high.txt'
 dest_filename = 'fsqca.xlsx'
 
 wb = Workbook()
