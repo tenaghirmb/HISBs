@@ -2,7 +2,7 @@
 # @Author: aka
 # @Date:   2018-07-25 16:07:56
 # @Last Modified by:   aka
-# @Last Modified time: 2018-07-25 21:26:35
+# @Last Modified time: 2018-07-27 10:05:44
 # @Email: tenag_hirmb@hotmail.com
 
 import re
@@ -10,13 +10,16 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
 
+txt_path = 'result/'
 dest_filename = 'fsqca.xlsx'
+
+var = ['ME', 'MC', 'CS', 'MAP', 'OP', 'F', 'POP', 'SOP', 'DIS']
+T1 = '评论有用性'
+T2 = '评论无用性'
 
 wb = Workbook()
 
 alignment = Alignment(horizontal='center', vertical='center')
-
-var = ['ME', 'MC', 'CS', 'MAP', 'OP', 'F', 'POP', 'SOP', 'DIS']
 
 
 def find_paths(data):
@@ -54,9 +57,9 @@ def magnify(intpath, parsol):
 
 def draw_path(line, ws, parsol, base):
     path, raw_coverage, unique_coverage, consistency = parse_path(line)
-    ws.cell(row=11, column=base, value=raw_coverage)
-    ws.cell(row=12, column=base, value=unique_coverage)
-    ws.cell(row=13, column=base, value=consistency)
+    ws.cell(row=len(var) + 2, column=base, value=raw_coverage)
+    ws.cell(row=len(var) + 3, column=base, value=unique_coverage)
+    ws.cell(row=len(var) + 4, column=base, value=consistency)
     for e in path:
         symbol = '⨂' if e[0] == '~' else '●'
         pos = var.index(e.strip('~'))
@@ -73,10 +76,10 @@ def draw_solution(intsol, sname, ws, parsol, base=0):
     count = len(paths)
     ws.cell(row=1, column=2 + base, value=sname)
     ws.merge_cells(start_row=1, start_column=2 + base, end_row=1, end_column=1 + count + base)
-    ws.cell(row=14, column=2 + base, value=scoverage)
-    ws.merge_cells(start_row=14, start_column=2 + base, end_row=14, end_column=1 + count + base)
-    ws.cell(row=15, column=2 + base, value=sconsistency)
-    ws.merge_cells(start_row=15, start_column=2 + base, end_row=15, end_column=1 + count + base)
+    ws.cell(row=len(var) + 5, column=2 + base, value=scoverage)
+    ws.merge_cells(start_row=len(var) + 5, start_column=2 + base, end_row=len(var) + 5, end_column=1 + count + base)
+    ws.cell(row=len(var) + 6, column=2 + base, value=sconsistency)
+    ws.merge_cells(start_row=len(var) + 6, start_column=2 + base, end_row=len(var) + 6, end_column=1 + count + base)
     for i, d in enumerate(paths):
         draw_path(d, ws, parsol, i + 2 + base)
     return count
@@ -88,13 +91,13 @@ def mk_ws(filename):
     for i in range(len(var)):
         ws['A' + str(i + 2)] = var[i]
 
-    ws['A11'] = '覆盖率\n(raw coverage)'
-    ws['A12'] = '净覆盖率\n(unique coverage)'
-    ws['A13'] = '一致率\n(consistency)'
-    ws['A14'] = '解的覆盖率\n(solution coverage)'
-    ws['A15'] = '解的一致率\n(solution consistency)'
+    ws['A' + str(len(var) + 2)] = '覆盖率\n(raw coverage)'
+    ws['A' + str(len(var) + 3)] = '净覆盖率\n(unique coverage)'
+    ws['A' + str(len(var) + 4)] = '一致率\n(consistency)'
+    ws['A' + str(len(var) + 5)] = '解的覆盖率\n(solution coverage)'
+    ws['A' + str(len(var) + 6)] = '解的一致率\n(solution consistency)'
 
-    with open('result/' + filename) as f:
+    with open(txt_path + filename) as f:
         result = f.read()
 
     p = re.compile("\n{3,}")
@@ -107,15 +110,15 @@ def mk_ws(filename):
     parsol = rlist[1]
     rparsol = rlist[4]
 
-    count = draw_solution(intsol, '评论有用性', ws, parsol)
-    rcount = draw_solution(rintsol, '评论无用性', ws, rparsol, count)
+    count = draw_solution(intsol, T1, ws, parsol)
+    rcount = draw_solution(rintsol, T2, ws, rparsol, count)
 
-    for c in [ws.cell(row=r, column=c) for r in range(1, 16) for c in range(1, 2 + count + rcount)]:
+    for c in [ws.cell(row=r, column=c) for r in range(1, len(var) + 7) for c in range(1, 2 + count + rcount)]:
         c.alignment = alignment
 
 
 def main():
-    files = os.listdir('result')
+    files = os.listdir(txt_path)
 
     for file in files:
         mk_ws(file)
