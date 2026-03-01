@@ -1,0 +1,12 @@
+# Python
+__pycache__
+
+# Jupyter
+.ipynb_checkpoints
+
+# My keys
+private.py
+
+# Mac
+.DS_Store
+
